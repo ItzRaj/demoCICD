@@ -1,5 +1,12 @@
+import os
 import tkinter as tk
 import random
+
+# Exit gracefully when running in GitHub Actions
+if os.getenv("GITHUB_ACTIONS") == "true":
+    print("Running in GitHub Actions (headless environment).")
+    print("Skipping Tkinter GUI startup.")
+    exit(0)
 
 # Game settings
 WIDTH = 600
@@ -10,7 +17,6 @@ GAME_TIME = 30
 score = 0
 time_left = GAME_TIME
 
-# Functions
 def move_target():
     x = random.randint(0, WIDTH - TARGET_SIZE)
     y = random.randint(50, HEIGHT - TARGET_SIZE)
@@ -24,6 +30,7 @@ def hit_target(event):
 
 def countdown():
     global time_left
+
     if time_left > 0:
         time_left -= 1
         timer_label.config(text=f"Time: {time_left}")
@@ -38,23 +45,20 @@ def countdown():
             fill="red"
         )
 
-# Main Window
+# Create GUI
 root = tk.Tk()
 root.title("Catch The Target")
 root.resizable(False, False)
 
-# Labels
 score_label = tk.Label(root, text="Score: 0", font=("Arial", 14))
 score_label.pack(side=tk.LEFT, padx=20)
 
 timer_label = tk.Label(root, text=f"Time: {GAME_TIME}", font=("Arial", 14))
 timer_label.pack(side=tk.RIGHT, padx=20)
 
-# Canvas
 canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="lightblue")
 canvas.pack()
 
-# Target
 target = canvas.create_oval(
     100, 100,
     100 + TARGET_SIZE,
@@ -62,10 +66,8 @@ target = canvas.create_oval(
     fill="red"
 )
 
-# Click detection
 canvas.tag_bind(target, "<Button-1>", hit_target)
 
-# Start Game
 move_target()
 countdown()
 
